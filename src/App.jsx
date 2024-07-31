@@ -65,26 +65,25 @@ export default function App() {
   };
 
   return (
-    <div>
+    <div className=' w-full min-h-screen bg-slate-800 p-10 flex flex-col gap-16 items-center'>
+      <div className=' text-white text-7xl font-semibold'>ImageVerse</div>
+
       <input
         type="file"
         accept="image/png, image/jpeg"
         multiple
         onChange={handleFileChange}
       />
-      <input
-        type="text"
-        placeholder="Enter your prompt here"
-        value={promptInput}
-        onChange={(e) => {
-          setPromptInput(e.target.value);
-        }}></input>
-      <button onClick={run} disabled={loading}>
-        {loading ? 'Processing...' : 'Click to get results'}
-      </button>
-      <div>
-        {loading ? 'Loading...' : result}
+
+      <div className=" h-12 w-1/2 border-2 border-blue-400 rounded-md flex overflow-hidden">
+                <input type="text" className="w-full focus:outline-none p-2" onChange={(e)=>{setPromptInput(e.target.value)}}/>
+                <button onClick={run} disabled={loading} className=' bg-lime-400 px-4 text-slate-700 font-semibold'>{loading ? 'Processing....' : "Ask"}</button>
       </div>
+
+      <div className=' h-2/4 w-1/2 bg-white p-2 rounded-md'>
+        {loading ? 'Loading....' : "Your results are shown here : \n"+ result}
+      </div>
+
     </div>
   );
 }
