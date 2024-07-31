@@ -19,7 +19,7 @@ const fileToGenerativePart = async (file, mimeType) => {
     };
 
     reader.onerror = (error) => reject(error);
-    
+
     reader.readAsDataURL(file);
   });
 };
@@ -28,28 +28,29 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [ promptInput , setPromptInput ] = useState("");
 
   const handleFileChange = (event) => {
     setFiles(event.target.files);
   };
 
   const run = async () => {
-    if (files.length < 2) {
-      alert('Please select two images.');
+    if (files.length === 0) {
+      alert('Please select at least one image.');
       return;
     }
 
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-    const prompt = "What's the difference between these pictures?";
+    // Dynamically create prompt based on number of images
+    const prompt = promptInput
 
     setLoading(true); // Start loading
 
     try {
-      const imageParts = await Promise.all([
-        fileToGenerativePart(files[0], files[0].type),
-        fileToGenerativePart(files[1], files[1].type),
-      ]);
+      const imageParts = await Promise.all(
+        Array.from(files).map((file) => fileToGenerativePart(file, file.type))
+      );
 
       const result = await model.generateContent([prompt, ...imageParts]);
       const response = await result.response;
@@ -71,7 +72,16 @@ export default function App() {
         multiple
         onChange={handleFileChange}
       />
-      <button onClick={run}>Click to get results</button>
+      <input
+        type="text"
+        placeholder="Enter your prompt here"
+        value={promptInput}
+        onChange={(e) => {
+          setPromptInput(e.target.value);
+        }}></input>
+      <button onClick={run} disabled={loading}>
+        {loading ? 'Processing...' : 'Click to get results'}
+      </button>
       <div>
         {loading ? 'Loading...' : result}
       </div>
